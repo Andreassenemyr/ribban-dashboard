@@ -1,20 +1,38 @@
+'use client'
+
 import { Id } from "@/convex/_generated/dataModel";
+import { api } from "@/convex/_generated/api";
+
 import { useQuery } from "convex/react";
 
 interface ProjectIdPageProps {
     params: {
-        documentId: Id<"projects">;
+        projectId: Id<"projects">;
     }
 }
 
 const ProjectIdPage = ({
     params
 }: ProjectIdPageProps) => {
-    const project = useQuery
+    const project = useQuery(api.projects.getById, {
+        projectId: params.projectId,
+    });
+    
+    if (project === undefined) {
+        return (
+          <div>
+            Laddar
+          </div>
+        );
+      }
+    
+      if (project === null) {
+        return <div>Not found</div>
+      }
 
     return (
         <>
-
+            {project?.title}
         </>
     );
 };

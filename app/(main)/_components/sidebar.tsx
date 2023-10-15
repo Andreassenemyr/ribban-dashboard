@@ -1,5 +1,9 @@
 import { ProjectList } from "@/app/(main)/_components/project-list";
+import { api } from "@/convex/_generated/api";
+import { useMutation } from "convex/react";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const NavigationLinks = [
     { name: 'Hem', href: '/home', icon: '/home-2.svg' },
@@ -9,6 +13,15 @@ const NavigationLinks = [
 ];
 
 export const Sidebar = () => {
+    const router = useRouter();
+    const create = useMutation(api.projects.create);
+
+    const onCreate = () => {
+        const promise = create({ title: "Untitled" })
+          .then((documentId) => router.push(`/projects/${documentId}`))
+    };
+    
+
     return (
         <div className="bg-white w-[350px] h-screen border-r flex flex-col">
             <div className="flex border-b items-center h-24 px-6 gap-3">
@@ -21,7 +34,7 @@ export const Sidebar = () => {
             <div className="flex flex-col gap-y-6 px-6 py-8 border-b">
                 {NavigationLinks.map((link, index) => {
                     return (
-                        <div key={index} className="flex items-center text-gray-400 gap-x-3 font-normal cursor-pointer">
+                        <Link key={index} href={link.href} className="flex items-center text-gray-400 gap-x-3 font-normal cursor-pointer">
                             <Image
                                 alt={link.name}
                                 src={link.icon}
@@ -29,7 +42,7 @@ export const Sidebar = () => {
                                 height={20}
                             />
                             <h1 className='text-lg'>{link.name}</h1>
-                        </div>
+                        </Link>
                     )
                 })}
             </div>
@@ -43,6 +56,7 @@ export const Sidebar = () => {
                             className='cursor-pointer'
                             width={20}
                             height={20}
+                            onClick={() => onCreate()}
                         />
                     </div>
                     <ProjectList/>

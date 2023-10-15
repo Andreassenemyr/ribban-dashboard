@@ -26,4 +26,51 @@ export const getSidebar = query({
         
         return projects;
     }
+});
+
+export const getById = query({
+    args: { projectId: v.id('projects') },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        const project = await ctx.db.get(args.projectId);
+
+        if (!project) {
+            throw new Error('Project was not found.');
+        }
+
+        if (!identity) {
+            throw new Error('Not authenticated.');
+        }
+
+        const userId = identity.subject;
+        if (project.userId !== userId) {
+            throw new Error('Unauthorized to access this project.');
+        }
+
+        return project;
+    }
 })
+
+export const create = mutation({
+    args: {
+      title: v.string(),
+    },
+    handler: async (ctx, args) => {
+      const identity = await ctx.auth.getUserIdentity();
+  
+      if (!identity) {
+        throw new Error("Not authenticated");
+      }
+  
+      const userId = identity.subject;
+  
+      const document = await ctx.db.insert("projects", {
+        title: args.title,
+        userId,
+        color: '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substring(1,6),
+        tasks: [],
+      });
+  
+      return document;
+    }
+});

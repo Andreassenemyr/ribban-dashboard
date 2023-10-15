@@ -1,8 +1,8 @@
-import { Sidebar } from '@/components/sidebar'
+import { Sidebar } from '@/app/(main)/_components/sidebar'
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { Navigation } from '@/components/navigation'
+import { Navigation } from '@/app/(main)/_components/navigation'
 import { ConvexProviderWithAuth0 } from "convex/react-auth0";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { ConvexClientProvider } from '@/components/providers/convex-provider'

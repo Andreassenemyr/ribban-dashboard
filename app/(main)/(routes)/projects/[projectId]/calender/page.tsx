@@ -4,4 +4,4 @@ export default function Calender() {
             Kalender
         </div>
     )
-}
+};

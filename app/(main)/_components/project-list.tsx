@@ -14,8 +14,12 @@ export const ProjectList = ({
 }) => {
     const params = useParams();
     const router = useRouter();
-    
+
     const projects = useQuery(api.projects.getSidebar, {});
+    
+    const onRedirect = (documentId: string) => {
+        router.push(`/projects/${documentId}`);
+    };
 
     if (projects === undefined) {
         return (
@@ -24,15 +28,23 @@ export const ProjectList = ({
             </div>
         )
     };
+    
 
     return (
         <div className="flex flex-col py-4 gap-y-2">
-            {projects.map((project, index) => (
-                <div key={project._id} className="flex bg-gray-100 items-center gap-x-5 py-2 px-2 rounded-md cursor-pointer">
-                    <div className="w-4 h-4 rounded-full" style={{ backgroundColor: project.color}}/>
-                    <h1 className="text-slate-700 font-semibold text-lg">{project.title}</h1>
-                </div>
-            ))}
+            {projects.map((project, index) => {
+                const isActive = project._id === params.projectId;
+
+                return (
+                    <div key={project._id} onClick={() => onRedirect(project._id)} className={cn(
+                        "flex items-center gap-x-5 py-2 px-2 rounded-md cursor-pointer",
+                        isActive && 'bg-gray-100 font-semibold'
+                    )}>
+                        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: project.color + '1'}}/>
+                        <h1 className="text-slate-700 text-lg">{project.title}</h1>
+                    </div>
+                )
+            })}
         </div>
     )
 }

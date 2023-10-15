@@ -12,12 +12,14 @@ export const ConvexClientProvider = ({
 }: {
   children: ReactNode;
 }) => {
+  const redirectUri = typeof window !== 'undefined' ? window.location.origin : '';
+
   return (
     <Auth0Provider
       domain="https://dev-ribban.eu.auth0.com"
       clientId="nD8U3sLaUpMsakNIGLouppDuXesBOlaE"
       authorizationParams={{
-        redirect_uri: window.location.origin
+        redirect_uri: redirectUri
       }}
       useRefreshTokens
       cacheLocation='localstorage'
