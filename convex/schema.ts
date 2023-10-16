@@ -14,5 +14,8 @@ export default defineSchema({
         title: v.string(),
         projectId: v.id("projects"),
         status: v.string(),
+        assignedTo: v.array(v.string()),
+        tags: v.array(v.string()),
+        deadline: v.optional(v.number()),
     })
 })

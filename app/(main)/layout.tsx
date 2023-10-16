@@ -27,7 +27,7 @@ export default function RootLayout({
   }
 
   return (
-    <div className='flex bg-white w-screen h-screen'>
+    <div className='flex bg-white min-h-screen'>
       <Sidebar/>
       <div className='w-full'>
         <Navigation/>
