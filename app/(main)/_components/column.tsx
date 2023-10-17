@@ -7,6 +7,7 @@ import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import { useState } from "react"
 import { Cinzel } from "next/font/google"
+import { ConfirmModal } from "@/components/modals/confirm-modal"
 
 interface ColumnProps {
     title: string,
@@ -22,16 +23,12 @@ export const Column = ({
     color,
     selectedCard,
     cards,
-}: ColumnProps) => {
-    const taskList = useQuery(api.tasks.getByProject, {
-        projectId: project,
-    });
-    
+}: ColumnProps) => {    
     return (
         <div className="w-full">
             <div className="flex gap-4 items-center">
                 <h1 className="font-semibold text-slate-700 text-sm py-3">{title.toUpperCase()}</h1>
-                <div className="text-gray-400 text-sm rounded-xl border h-max px-3 ">{taskList?.length}</div>
+                <div className="text-gray-400 text-sm rounded-xl border h-max px-3 ">{cards.length}</div>
             </div>
             <div className="h-[1.5px] w-full" style={{ backgroundColor: color }}/>
             <Droppable droppableId={title}>

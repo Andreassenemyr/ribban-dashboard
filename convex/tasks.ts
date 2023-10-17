@@ -5,7 +5,7 @@ export const create = mutation({
     args: {
       title: v.string(),
       projectId: v.id('projects'),
-      deadline: v.optional(v.number()),
+      deadline: v.number()
     },
     handler: async (ctx, args) => {
       const identity = await ctx.auth.getUserIdentity();
@@ -14,7 +14,7 @@ export const create = mutation({
         throw new Error("Not authenticated");
       }
   
-      const taskId = await ctx.db.insert("tasks", { title: args.title, projectId: args.projectId, status: 'Todo', assignedTo: [], tags: [], deadline: args.deadline });
+      const taskId = await ctx.db.insert("tasks", { title: args.title, projectId: args.projectId, status: 'Todo', assignedTo: [identity.subject], tags: [], deadline: args.deadline });
       const prevTasks = await ctx.db.get(args.projectId);
       const document = await ctx.db.patch(args.projectId, {
         tasks: [...(prevTasks?.tasks || []), taskId]
@@ -27,17 +27,22 @@ export const create = mutation({
 export const getByProject = query({
     args: { 
         projectId: v.string(),
+        userId: v.boolean(),
     },
     handler: async (ctx, args) => {
         const identity = await ctx.auth.getUserIdentity();
-
+        
         if (!identity) {
             throw new Error('Not authenticated.');
         }
 
-        const tasks = await ctx.db.query('tasks')
+        let tasks = await ctx.db.query('tasks')
             .filter((q) => q.eq(q.field('projectId'), args.projectId))
-            .collect();
+            .collect()
+
+        if (args.userId) {
+            tasks = tasks.filter((task) => task.assignedTo.includes(identity.subject));
+        }
 
         return tasks;
     }

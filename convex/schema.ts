@@ -4,7 +4,7 @@ import { v } from "convex/values";
 export default defineSchema({
     projects: defineTable({
         title: v.string(),
-        userId: v.string(),
+        userId: v.array(v.string()),
         color: v.string(),
         tasks: v.array(v.id('tasks'))
     })
@@ -17,5 +17,12 @@ export default defineSchema({
         assignedTo: v.array(v.string()),
         tags: v.array(v.string()),
         deadline: v.optional(v.number()),
+    }),
+
+    users: defineTable({
+        name: v.string(),
+        userId: v.string(),
+        tokenIdentifier: v.string(),
     })
+    .index('by_token', ['tokenIdentifier'])
 })

@@ -15,14 +15,12 @@ export const getSidebar = query({
         }
 
         const userId = identity.subject;
-        const projects = await ctx.db
+        let projects = await ctx.db
             .query('projects')
-            .withIndex('by_user', (q) => 
-                q
-                    .eq('userId', userId)
-            )
             .order('desc')
             .collect();
+
+        projects = projects.filter((project) => project.userId.includes(userId));
         
         return projects;
     }
@@ -43,13 +41,49 @@ export const getById = query({
         }
 
         const userId = identity.subject;
-        if (project.userId !== userId) {
+        if (!project.userId.includes(userId)) {
             throw new Error('Unauthorized to access this project.');
         }
 
         return project;
     }
 })
+
+export const update = mutation({
+  args: {
+    id: v.id("projects"),
+    title: v.optional(v.string()),
+    color: v.optional(v.string()),
+    userId: v.optional(v.array(v.string())),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new Error("Unauthenticated");
+    }
+
+    const userId = identity.subject;
+
+    const { id, ...rest } = args;
+
+    const existingProject = await ctx.db.get(args.id);
+
+    if (!existingProject) {
+      throw new Error("Not found");
+    }
+
+    if (!existingProject.userId.includes(userId)) {
+      throw new Error("Unauthorized");
+    }
+
+    const project = await ctx.db.patch(args.id, {
+      ...rest,
+    });
+
+    return project;
+  },
+});
 
 export const create = mutation({
     args: {
@@ -66,7 +100,7 @@ export const create = mutation({
   
       const document = await ctx.db.insert("projects", {
         title: args.title,
-        userId,
+        userId: [userId],
         color: '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substring(1,6),
         tasks: [],
       });

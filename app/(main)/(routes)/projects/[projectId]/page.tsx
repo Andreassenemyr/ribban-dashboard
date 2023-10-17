@@ -2,7 +2,7 @@
 
 import { Id } from "@/convex/_generated/dataModel";
 import { api } from "@/convex/_generated/api";
-
+import { Title } from "@/app/(main)/_components/title";
 import { useQuery } from "convex/react";
 
 interface ProjectIdPageProps {
@@ -24,15 +24,15 @@ const ProjectIdPage = ({
             Laddar
           </div>
         );
-      }
-    
-      if (project === null) {
-        return <div>Not found</div>
-      }
+    }
+  
+    if (project === null) {
+      return <div>Not found</div>
+    }
 
     return (
         <>
-            {project?.title}
+            <Title initialData={project}/>
         </>
     );
 };

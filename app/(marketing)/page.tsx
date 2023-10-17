@@ -10,11 +10,7 @@ const MarketingPage = () => {
     const { isAuthenticated, isLoading } = useConvexAuth();
 
     const { loginWithRedirect } = useAuth0();
-
-    const onLogin = () => {
-        loginWithRedirect().then(() => {
-        });
-    }
+    
 
     return (
         <div className="h-screen w-screen bg-slate-700 text-white flex flex-col">

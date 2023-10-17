@@ -1,9 +1,15 @@
+'use client';
+
+import useStoreUserEffect from "@/hooks/use-store-user";
+
 const HomePage = () => {
-    return (
-        <div className="text-slate-700 ">
-            Hejdå
-        </div>
-    )
+    const userId = useStoreUserEffect();
+
+    if (userId === null) {
+        return <div>Storing user...</div>;
+     }
+     
+     return <div>Stored user ID: {userId}</div>;
 };
 
 export default HomePage;
