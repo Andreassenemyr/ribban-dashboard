@@ -32,7 +32,6 @@ const ProjectIdPage = ({
 
     return (
         <>
-            <Title initialData={project}/>
         </>
     );
 };

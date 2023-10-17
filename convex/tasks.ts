@@ -48,6 +48,27 @@ export const getByProject = query({
     }
 })
 
+export const getByStatus = query({
+    args: { 
+        projectId: v.string(),
+        status: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        
+        if (!identity) {
+            throw new Error('Not authenticated.');
+        }
+
+        let tasks = await ctx.db.query('tasks')
+            .filter((q) => q.eq(q.field('projectId'), args.projectId))
+            .filter((q) => q.eq(q.field('status'), args.status))
+            .collect()
+
+        return tasks;
+    }
+})
+
 export const setStatus = mutation({
     args: { 
         taskId: v.id('tasks'), 
@@ -68,6 +89,35 @@ export const setStatus = mutation({
     }
 })
 
+export const update = mutation({
+    args: {
+      id: v.id("tasks"),
+      title: v.optional(v.string()),
+      status: v.optional(v.string()),
+      assignedTo: v.optional(v.array(v.string())),
+    },
+    handler: async (ctx, args) => {
+      const identity = await ctx.auth.getUserIdentity();
+  
+      if (!identity) {
+        throw new Error("Unauthenticated");
+      }
+    
+      const { id, ...rest } = args;
+  
+      const existingTask = await ctx.db.get(args.id);
+  
+      if (!existingTask) {
+        throw new Error("Not found");
+      }
+  
+      const task = await ctx.db.patch(args.id, {
+        ...rest,
+      });
+
+      return task;
+    },
+  });
 
 export const getById = query({
     args: { taskId: v.id('tasks') },

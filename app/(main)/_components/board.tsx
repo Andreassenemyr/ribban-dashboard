@@ -13,6 +13,7 @@ import JSConfetti from "js-confetti"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { ConfirmModal } from "@/components/modals/confirm-modal"
+import Image from "next/image"
 
 interface BoardProps {
     project: Doc<'projects'>;
@@ -27,7 +28,6 @@ export const Board = ({
     const setStatus = useMutation(api.tasks.setStatus);
     const update = useMutation(api.projects.update);
     const getUsers = useQuery(api.users.getUsers);
-
 
     const [onlyMine, setOnlyMine] = useState(false);
 
@@ -69,17 +69,7 @@ export const Board = ({
           const updatedColumns = [...columns];
           const column = updatedColumns[columnIndex];
           const [movedCard] = column.cards.splice(source.index, 1);
-          column.cards.splice(destination.index, 0, movedCard);
-
-          if (column.name === 'Completed') {
-            const confetti = new JSConfetti();
-            confetti.addConfetti({
-                emojis: ['🎉', '🥳'],
-                emojiSize: 50,
-                confettiNumber: 50,
-              })
-          }
-    
+          column.cards.splice(destination.index, 0, movedCard)
           
           setStatus({ taskId: movedCard._id, status: column.name })
     
@@ -97,24 +87,22 @@ export const Board = ({
           const [movedCard] = sourceColumn.cards.splice(source.index, 1);
           destinationColumn.cards.splice(destination.index, 0, movedCard);
 
-          setStatus({ taskId: movedCard._id, status: destinationColumn.name })
+          setStatus({ taskId: movedCard._id, status: destinationColumn.name });
 
           if (destinationColumn.name === 'Completed') {
             const confetti = new JSConfetti();
             confetti.addConfetti({
-                emojis: ['🥳', '🎉'],
+                emojis: ['🎉', '🥳'],
                 emojiSize: 50,
                 confettiNumber: 50,
               })
           }
-    
     
           setColumns(updatedColumns);
         }
     }
 
     const allUsers = getUsers?.map((user) => user.userId) || [];
-
 
     return (
         <>
@@ -126,13 +114,15 @@ export const Board = ({
                         { name: 'Board', href: `/projects/${project._id}/board`}
                     ]}/>
                     <h1 className="text-slate-800 text-5xl font-bold py-4">{project.title}</h1>
-                    <Button 
-                        variant='outline'
-                        className={cn("text-slate-800 my-4 rounded-md font-semibold border border-gray-300 text-md gap-3", onlyMine && 'bg-gray-100')}
-                        onClick={() => setOnlyMine(!onlyMine)}
-                    >
-                        Bara Mina
-                    </Button>
+                    <div>
+                        <Button 
+                            variant='outline'
+                            className={cn("text-slate-800 my-4 rounded-md font-semibold border border-gray-300 text-md gap-3", onlyMine && 'bg-gray-100')}
+                            onClick={() => setOnlyMine(!onlyMine)}
+                        >
+                            Bara Mina
+                        </Button>
+                    </div>
                 </div>
                 <div className="flex gap-3">
                     <Button variant='outline' className="text-slate-800 rounded-lg font-semibold border-[1.5px] border-[#E2E8F0] text-md px-3">
@@ -174,14 +164,6 @@ export const Board = ({
                 <PlusIcon fill='white'/>
                 Ny Task
             </div>
-            <ConfirmModal onConfirm={() => console.log('Confirmed')}>
-                <div
-                  role="button"
-                  className="rounded-sm p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600 text-slate-700 w-max"
-                >
-                  Hej
-                </div>
-            </ConfirmModal>
         </>
     )
 }

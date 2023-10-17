@@ -39,12 +39,8 @@ export const Column = ({
                                 id={task._id} 
                                 index={index} 
                                 key={task._id} 
-                                title={task.title} 
-                                assignedTo={task.assignedTo}
-                                tags={task.tags}
-                                deadline={task.deadline}
                                 selected={selectedCard === task._id}
-                                isFinished={title === 'Completed'}
+                                data={task}
                             />
                         ))}
                         {provided.placeholder}

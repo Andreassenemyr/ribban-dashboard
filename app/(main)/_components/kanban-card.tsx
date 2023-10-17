@@ -6,40 +6,34 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
+import { TaskModal } from "./modal/task-modal";
+import { Doc } from "@/convex/_generated/dataModel";
 
 interface KanbanCardProps {
     id: string;
     index: number;
-    title: string;
     selected: boolean;
-    assignedTo: string[],
-    tags: string[],
-    deadline?: number | undefined;
-    isFinished?: boolean;
+    data: Doc<'tasks'>;
 }
 
 export const KanbanCard = ({
     id,
     index,
-    title,
     selected,
-    assignedTo,
-    tags,
-    deadline,
-    isFinished = true,
+    data,
 }: KanbanCardProps) => {
     return (
         <Draggable key={index} index={index} draggableId={`${id}`}> 
             {(provided) => (
                 <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className="pb-3 bg-white">
-                    <ConfirmModal onConfirm={() => console.log('hej')}>
+                    <TaskModal task={data}>
                         <div className={cn(
                             "w-full border rounded-lg cursor-pointer transition-all duration-400",
                             selected && 'rotate-[4deg]'
                         )}>
                             
                             <div className="p-4">
-                                <h1 className="text-slate-800 font-bold text-md">{title}</h1>
+                                <h1 className="text-slate-800 font-bold text-md">{data.title}</h1>
                                 <p className="text-sm text-gray-400 font-light py-2">It just needs to adapt the UI from what you did before.</p>
                                 <div className="flex pt-2">
                                     <div className="bg-cyan-50 text-blue-400 font-medium p-1 rounded-md text-sm">Development</div>
@@ -50,7 +44,7 @@ export const KanbanCard = ({
                                     <Image alt='Kommentarer' src='/Chat.svg' width={20} height={20} />
                                     0
                                 </div>
-                                {isFinished ? (
+                                {data.status === 'Completed' ? (
                                     <div className="flex items-center font-medium text-sm gap-1 text-[#78C552]">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                                             <path d="M5.83337 9.99999L10 14.1667L18.3334 5.83332" stroke="#78C552" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -58,15 +52,15 @@ export const KanbanCard = ({
                                         </svg>
                                         Färdig
                                     </div>
-                                ) : (deadline !== undefined) && (
+                                ) : (data.deadline !== undefined) && (
                                     <div className="flex items-center font-medium text-sm text-gray-400 gap-2">
                                         <CalenderIcon/>
-                                        Imorgon ({Math.round((deadline - (new Date()).getTime()) / 1000 / 60 / 60)}h)
+                                        Imorgon ({Math.round((data.deadline - (new Date()).getTime()) / 1000 / 60 / 60)}h)
                                     </div>
                                 )}
                             </div>
                         </div>
-                    </ConfirmModal>
+                    </TaskModal>
                     
                 </div>
             )}

@@ -9,20 +9,21 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 interface TitleProps {
-    initialData: Doc<"projects">;
+    initialData: string;
+    onUpdate: (title: string) => void;
 };
 
 export const Title = ({
-    initialData
+    initialData,
+    onUpdate
 }: TitleProps) => {
     const inputRef = useRef<HTMLInputElement>(null);
-    const update = useMutation(api.projects.update);
 
-    const [title, setTitle] = useState(initialData.title || "Untitled");
+    const [title, setTitle] = useState(initialData || "Untitled");
     const [isEditing, setIsEditing] = useState(false);
 
     const enableInput = () => {
-        setTitle(initialData.title);
+        setTitle(initialData);
         setIsEditing(true);
         setTimeout(() => {
           inputRef.current?.focus();
@@ -38,10 +39,7 @@ export const Title = ({
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
         setTitle(event.target.value);
-        update({
-            id: initialData._id,
-            title: event.target.value || "Untitled"
-        });
+        onUpdate(event.target.value);
     };
 
     const onKeyDown = (
@@ -62,17 +60,17 @@ export const Title = ({
           onChange={onChange}
           onKeyDown={onKeyDown}
           value={title}
-          className="h-7 px-2 focus-visible:ring-transparent"
+          className="h-7 px-2 text-xl py-4 focus-visible:ring-transparent"
         />
       ) : (
         <Button
           onClick={enableInput}
           variant="ghost"
           size="sm"
-          className="font-normal h-auto p-1"
+          className="font-normal font-semibold text-slate-700 h-auto p-1 text-xl"
         >
           <span className="truncate">
-            {initialData?.title}
+            {title}
           </span>
         </Button>
       )}

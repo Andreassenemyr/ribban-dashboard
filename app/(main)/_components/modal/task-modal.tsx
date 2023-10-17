@@ -11,44 +11,53 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { Doc } from "@/convex/_generated/dataModel";
+import { Title } from "../title";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 interface TaskModalProps {
   children: React.ReactNode;
-  onConfirm: () => void;
+  task: Doc<'tasks'>;
 };
 
 export const TaskModal = ({
-  children,
-  onConfirm
+    children,
+    task
 }: TaskModalProps) => {
-  const handleConfirm = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.stopPropagation();
-    onConfirm();
-  };
+  const update = useMutation(api.tasks.update);
 
   return (
     <AlertDialog>
       <AlertDialogTrigger onClick={(e) => e.stopPropagation()} asChild>
         {children}
       </AlertDialogTrigger>
-      <AlertDialogContent className="">
+      <AlertDialogContent className="bg-white">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-slate-700">
-            Are you absolutely sure?
+          <AlertDialogTitle className="py-2 text-slate-700">
+            <div className="flex flex-col">
+              <Title
+                initialData={task.title}
+                onUpdate={(title) => {
+                  update({ id: task._id, title: title || 'Untitled' });
+                }}
+              />
+              <h1 className="text-gray-400 px-1 font-normal text-sm">Under {task.status}</h1>
+            </div>
+            
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-slate-700">
-            This action cannot be undone.
+          <div className="w-full bg-gray-200 h-[1px]"></div>
+          <AlertDialogDescription className="py-2 text-slate-700 px-1">
+            <h1 className="font-medium py-2">Beskrivning</h1>
+            <Input/>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="text-slate-700 rounded-lg" onClick={e => e.stopPropagation()}>
-            Cancel
+          <AlertDialogCancel className="text-white rounded-lg w-full bg-gray-800" onClick={e => e.stopPropagation()}>
+            Stäng
           </AlertDialogCancel>
-          <AlertDialogAction className="text-slate-700" onClick={handleConfirm}>
-            Confirm
-          </AlertDialogAction>
+
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
